@@ -57,7 +57,7 @@ dependencies {
 mod_version = release_tag_name
 ```
 ## Credits
-
+The concept behind this library by @bigjango
 This project builds upon ideas and code from [Lexal1's Cosmical Craft](https://github.com/Lexal1/cosmical-craft). Special thanks for the following code snippet which provided a foundation for gravity modification:
 
 ```java
