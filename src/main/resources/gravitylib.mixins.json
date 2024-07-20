@@ -1,9 +1,13 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "turniplabs.examplemod.mixin",
+    "package": "deus.gravitylib.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
+      "MixinEntity",
+      "MixinLivingEntity",
+      "MixinEntity",
+      "MixinWorld"
     ],
     "client": [
     ],
