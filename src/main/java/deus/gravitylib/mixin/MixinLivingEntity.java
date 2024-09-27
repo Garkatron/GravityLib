@@ -17,34 +17,59 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Mixin class to add custom gravity and jump behavior to living entities.
+ * This mixin modifies various aspects of entity movement and fall damage
+ * by introducing a custom gravity system, allowing for more flexible control
+ * of how entities behave in different gravity environments.
  */
 @Mixin(EntityLiving.class)
-public class MixinLivingEntity implements IGravityObject, ILivingEntity {
+public class MixinLivingEntity implements ILivingEntity {
 
 	/**
 	 * Unique field to store the vertical gravity scale.
+	 * This value is used to modify the effect of gravity on the entity's vertical movement.
+	 * A lower value reduces the effect of gravity, while a higher value increases it.
 	 */
 	@Unique
 	private double y_gravity_scale = 0.0;
 
 	/**
-	 * Unique field to store the jump force.
+	 * Unique field to store the entity's jump force.
+	 * This value determines how high the entity can jump.
 	 */
 	@Unique
 	private double jump_force = 0.0;
 
 	/**
-	 * Shadow field to reference if the entity is jumping.
+	 * Shadow field to determine if the entity is currently jumping.
+	 * This is referenced to apply jump behavior modifications.
 	 */
 	@Shadow
 	protected boolean isJumping;
 
 	/**
+	 * Unique field to store the original fall damage value.
+	 * This value can be modified based on gravity scale or other custom logic.
+	 */
+	@Unique protected int originalDamage = 1; // Default value for original fall damage.
+
+	/**
+	 * Unique field to store the damage reduction factor.
+	 * This multiplier modifies the fall damage by reducing or increasing it based on a custom factor.
+	 */
+	@Unique protected float damageReductionFactor = 1.0f; // No damage modification by default.
+
+	/**
+	 * Unique field to store the base reduction offset.
+	 * This value is used to modify the final fall damage calculation by adding or subtracting a fixed amount.
+	 */
+	@Unique protected float baseReductionOffset = 3.0f; // Standard base offset.
+
+	/**
 	 * Injects code after the constructor of the EntityLiving class.
-	 * Initializes the vertical gravity scale and jump force based on the world.
+	 * Initializes the vertical gravity scale and jump force for the entity based on the world it's in.
 	 *
-	 * @param world The world the entity is in.
-	 * @param ci    The callback information.
+	 * @param world The world in which the entity exists.
+	 * @param ci The callback information.
 	 */
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;)V", at = @At("RETURN"), remap = false)
 	public void afterConstructor(World world, CallbackInfo ci) {
@@ -56,10 +81,11 @@ public class MixinLivingEntity implements IGravityObject, ILivingEntity {
 	}
 
 	/**
-	 * Redirects the method to adjust the vertical movement of the entity based on the gravity scale.
+	 * Redirects the method to adjust the vertical movement of the entity based on the custom gravity scale.
+	 * This allows the entity to experience different fall speeds or terminal velocities based on the gravity scale.
 	 *
 	 * @param instance The living entity instance.
-	 * @param yd       The original vertical movement value.
+	 * @param yd The original vertical movement value (delta Y).
 	 */
 	@Redirect(method = "moveEntityWithHeading(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/EntityLiving;yd:D", opcode = Opcodes.PUTFIELD), remap = false)
 	public void afterMoveEntityWithHeading(EntityLiving instance, double yd) {
@@ -76,21 +102,22 @@ public class MixinLivingEntity implements IGravityObject, ILivingEntity {
 	}
 
 	/**
-	 * Modifies the fall damage based on the gravity scale.
+	 * Modifies the fall damage based on the custom gravity scale and other modifiers.
+	 * The final damage is calculated by applying the gravity scale, damage reduction factor, and base offset.
 	 *
-	 * @param i The original fall damage.
-	 * @return The modified fall damage.
+	 * @param i The original fall damage value.
+	 * @return The modified fall damage value.
 	 */
 	@ModifyVariable(method = "causeFallDamage(F)V", at = @At(value = "STORE"), ordinal = 0, remap = false)
 	private int changeFallDamage(int i) {
-		return (int)((i * y_gravity_scale) - (3/y_gravity_scale) + 3);
+		return (int)((i * y_gravity_scale * damageReductionFactor) - (baseReductionOffset / y_gravity_scale) + baseReductionOffset);
 	}
 
 	/**
-	 * Redirects the method to adjust the vertical movement of the entity when jumping.
+	 * Redirects the method to adjust the entity's vertical movement when jumping based on the custom jump force.
 	 *
 	 * @param instance The living entity instance.
-	 * @param value    The original vertical movement value.
+	 * @param value The original vertical movement value (delta Y).
 	 */
 	@Redirect(method = "jump()V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/EntityLiving;yd:D", opcode = Opcodes.PUTFIELD), remap = false)
 	public void atJump(EntityLiving instance, double value) {
@@ -128,7 +155,50 @@ public class MixinLivingEntity implements IGravityObject, ILivingEntity {
 	}
 
 	/**
+	 * Sets the damage reduction factor for the entity.
+	 * This factor modifies how much fall damage the entity takes.
+	 *
+	 * @param factor The new damage reduction factor.
+	 */
+	@Override
+	public void gravityLib$setDamageReductionFactor(float factor) {
+		damageReductionFactor = factor;
+	}
+
+	/**
+	 * Gets the current damage reduction factor used in fall damage calculations.
+	 *
+	 * @return The current damage reduction factor.
+	 */
+	@Override
+	public float gravityLib$getDamageReductionFactor() {
+		return damageReductionFactor;
+	}
+
+	/**
+	 * Sets the base reduction offset used in fall damage calculations.
+	 * This value adjusts the fall damage by a fixed amount.
+	 *
+	 * @param offset The new base reduction offset.
+	 */
+	@Override
+	public void gravityLib$setBaseReductionOffset(float offset) {
+		baseReductionOffset = offset;
+	}
+
+	/**
+	 * Gets the current base reduction offset used in fall damage calculations.
+	 *
+	 * @return The current base reduction offset.
+	 */
+	@Override
+	public float gravityLib$getBaseReductionOffset() {
+		return baseReductionOffset;
+	}
+
+	/**
 	 * Gets the current vertical gravity scale.
+	 * This value modifies how strongly gravity affects the entity's vertical movement.
 	 *
 	 * @return The current value of the vertical gravity scale.
 	 */
@@ -138,7 +208,8 @@ public class MixinLivingEntity implements IGravityObject, ILivingEntity {
 	}
 
 	/**
-	 * Sets the vertical gravity scale.
+	 * Sets the vertical gravity scale for the entity.
+	 * A lower value means less gravity effect, while a higher value increases the gravity effect.
 	 *
 	 * @param value The new value for the vertical gravity scale.
 	 */
