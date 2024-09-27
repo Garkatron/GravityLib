@@ -27,7 +27,7 @@ public class ModConfig {
 		Properties prop = new Properties();
 
 		prop.setProperty("overworld.y_gravity_scale.value","1.0");
-		prop.setProperty("overworld.entity_jump_force.value","0.43");
+		prop.setProperty("overworld.entity_jump_force.value","0.42");
 
 		config = new ConfigHandler(MOD_ID, prop);
 		config.updateConfig();
