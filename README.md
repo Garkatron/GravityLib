@@ -1,87 +1,37 @@
-# GravityLib
+# Example Mod
 
-**GravityLib** is a library for Minecraft that provides tools and methods to manage gravity within the game. This project is designed to help mod developers manipulate gravitational forces in their creations.
+Template for making Babric mods for BTA!
 
-## Features
+**Note: *DO NOT fork this repository unless you want to contribute!***
 
-- **Modify global gravity**: Adjust gravity for the entire Minecraft world.
-- **Entity-specific gravity**: Apply different gravitational forces to various entities.
-- **Easy integration**: Simple API to integrate with existing mods.
-- **Configuration options**: Flexible configuration to fine-tune gravity settings.
+## Prerequisites
+- JDK for Java 17 ([Eclipse Temurin](https://adoptium.net/temurin/releases/) recommended)
+- [Intellij IDEA](https://www.jetbrains.com/idea/download/) (Scroll down for the free community edition, if using linux **DO NOT** use the flatpak distribution)
+- Minecraft Development plugin (Optional, but highly recommended)
 
-## Installation
+## Setup instructions
+   
 
-1. **Download**
-2. **Place** the GravityLib `.jar` file in the `mods` folder of your Minecraft directory.
+1. Click the `Use this template` button on this repo's page above (Will only appear if logged in). Choose `Create a new repository`, you will be redirected to a new page. Enter your repo's name and description, and hit `Create repository`.  
+   To get your project, open IntelliJ IDEA and click `Get from VCS`. Select `Repository URL` and enter your repo's url
 
-## Usage
+2. After the project has finished importing, close it and open it again.  
+   If that does not work, open the right sidebar with `Gradle` on it, open `Tasks` > `fabric` and run `ideaSyncTask`.
 
-### Basic Setup
+3. Create a new run configuration by going in `Run > Edit Configurations`.  
+   Then click on the plus icon and select Gradle. In the `Tasks and Arguments` field enter `build`.  
+   Running it will build your finished jar files and put them in `build/libs/`.
 
-1. **Create a World Configuration**: 
-   You can modify the global gravity scale and entity jump force by configuring the `World` class. These settings will apply to all entities within the world.
+4. Lastly, open `File` > `Settings` and head to `Build, Execution, Development` > `Build Tools` > `Gradle`.  
+   Make sure `Build and run using` and `Run tests using` is set to `Gradle`.
 
-```java
-World world = ...; // Obtain a reference to the current world
-IGravityWorld gravityWorld = (IGravityWorld) world;
+5. Done! Now, all that's left is to change every mention of `examplemod` and `turniplabs` to your own mod id and mod group, respectively. Happy modding!
 
-// Set global gravity scale
-gravityWorld.gravityLib$setYGravityScale(0.5); // Example value
+## Tips
 
-// Set entity jump force
-gravityWorld.gravityLib$setEntityJumpForce(1.0); // Example value
-```
-### Basict entity setup
-```java
-EntityLiving livingEntity = ...; // Obtain a reference to an EntityLiving instance
-ILivingEntity livingEntityAccessor = (ILivingEntity) livingEntity;
+1. If you haven't already you should join the BTA modding discord! https://discord.gg/FTUNJhswBT
+2. You can set your username when launching the client run configuration by setting `--username <username>` in your program arguments.
+3. When launching the server run configuration you may want to remove the `nogui` program argument in order to see the regular server GUI.
+4. In Intellij you can double press shift or press ctrl+N to search class files, change the search from the default `Project Files` to `All Places` you can easily explore the classes for you dependencies and even BTA itself.
+5. In Intellij if ctrl+left click on a field or method you can quickly get information on when and where that field or method is assign or used.
 
-// Set custom jump force
-livingEntityAccessor.gravityLib$setJumpForce(0.8); // Example value
-
-// Check if the entity is jumping
-boolean isJumping = livingEntityAccessor.gravityLib$isJumping();
-```
-### How to import
-##### build.gradle
-```gradle
-repositories {
-   maven { url = "https://jitpack.io" }
-}
-dependencies {
-   modImplementation "com.github.Garkatron:GravityLib:${project.gravity_lib_version}"
-}
-```
-##### gradle.properties
-```
-mod_version = release_tag_name
-```
-## Credits
-The concept behind this library by @bigjango
-This project builds upon ideas and code from [Lexal1's Cosmical Craft](https://github.com/Lexal1/cosmical-craft). Special thanks for the following code snippet which provided a foundation for gravity modification:
-
-```java
-@Inject(method = "moveEntityWithHeading(FF)V", at = @At("HEAD"))
-private void getGravity(float moveStrafing, float moveForward, CallbackInfo cbi){
-    gravityScale = 1f;
-    if (world.getWorldType() instanceof ISpace){
-        gravityScale = ((ISpace)world.worldType).getGravityScalar();
-    }
-}
-
-@Redirect(method = "moveEntityWithHeading(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/EntityLiving;yd:D", opcode = Opcodes.PUTFIELD))
-private void entityGravity(EntityLiving entity, double yd){ //Probably terrible way of modifying gravity by a scalar
-    double offset = -(yd - this.yd);
-    if ((0.021 > offset && offset > 0.019) || (0.081 > offset && offset > 0.079)){ // If falling in water or in air
-        entity.yd -= offset * gravityScale;
-    } else if ((-0.251 < yd && yd < -0.249)) { // Terminal velocity
-        entity.yd = yd * gravityScale;
-    } else { // Else regular behavior
-        entity.yd = yd;
-    }
-}
-
-@ModifyVariable(method = "causeFallDamage(F)V", at = @At(value = "STORE"), ordinal = 0)
-private int changeFallDamage(int i){
-    return (int)((i * gravityScale) - (3/gravityScale) + 3);
-}
