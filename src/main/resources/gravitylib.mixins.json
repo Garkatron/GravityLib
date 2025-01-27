@@ -4,10 +4,10 @@
     "package": "deus.gravitylib.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-      "MixinEntity",
-      "MixinLivingEntity",
-      "MixinEntity",
-      "MixinWorld"
+      "EntityMixin",
+      "MobMixin",
+      "EntityMixin",
+      "WorldMixin"
     ],
     "client": [
     ],

@@ -4,7 +4,7 @@ import turniplabs.halplibe.util.ConfigHandler;
 
 import java.util.Properties;
 
-import static deus.gravitylib.main.MOD_ID;
+import static deus.gravitylib.GravityLib.MOD_ID;
 
 
 public class ModConfig {

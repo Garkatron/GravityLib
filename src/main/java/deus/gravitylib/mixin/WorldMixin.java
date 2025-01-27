@@ -5,13 +5,13 @@ import net.minecraft.core.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import static deus.gravitylib.main.*;
+import static deus.gravitylib.GravityLib.*;
 
 /**
  * Mixin class to add custom gravity behavior to the world.
  */
 @Mixin(World.class)
-public class MixinWorld implements IGravityWorld {
+public class WorldMixin implements IGravityWorld {
 
 	/**
 	 * Unique field to store the global gravity scale.

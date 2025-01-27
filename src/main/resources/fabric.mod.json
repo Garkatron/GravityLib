@@ -9,8 +9,8 @@
     "@Garkatron"
   ],
   "contact": {
-    "homepage": "",
-    "sources": ""
+    "homepage": "https://github.com/Garkatron/GravityLib/tree/7.3",
+    "sources": "https://github.com/Garkatron/GravityLib/tree/7.3"
   },
 
 	"icon": "icon.png",
@@ -19,26 +19,26 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"deus.gravitylib.main"
+			"deus.gravitylib.GravityLib"
     ],
 		"beforeGameStart": [
-			"deus.gravitylib.main"
+			"deus.gravitylib.GravityLib"
 		],
 		"afterGameStart": [
-			"deus.gravitylib.main"
+			"deus.gravitylib.GravityLib"
 		],
 		"recipesReady": [
-			"deus.gravitylib.main"
+			"deus.gravitylib.GravityLib"
 		]
 	},
   "mixins": [
 		"gravitylib.mixins.json"
   ],
 
+
 	"depends": {
-		"minecraft": "^7.2-beta",
-		"fabricloader": ">=0.15.5",
-		"halplibe": ">=4.0.5"
+		"minecraft": "*",
+		"fabricloader": ">=0.15.5"
 	},
   "suggests": {
   }

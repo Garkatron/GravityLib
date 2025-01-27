@@ -7,7 +7,7 @@ import deus.gravitylib.interfaces.IGravityObject;
  * Provides methods to check and manipulate the jumping state of an entity,
  * as well as to modify and retrieve fall damage-related values.
  */
-public interface ILivingEntity extends IGravityObject {
+public interface IGravityMob extends IGravityObject {
 
 	/**
 	 * Checks if the entity is currently jumping.

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Mixin class to add custom gravity behavior to entities.
  */
 @Mixin(Entity.class)
-public class MixinEntity implements IGravityObject {
+public class EntityMixin implements IGravityObject {
 
 	/**
 	 * Unique field to store the vertical gravity scale.

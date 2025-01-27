@@ -1,9 +1,8 @@
 package deus.gravitylib.mixin;
 
-import deus.gravitylib.interfaces.IGravityObject;
 import deus.gravitylib.interfaces.IGravityWorld;
-import deus.gravitylib.interfaces.accesor.ILivingEntity;
-import net.minecraft.core.entity.EntityLiving;
+import deus.gravitylib.interfaces.accesor.IGravityMob;
+import net.minecraft.core.entity.Mob;
 import net.minecraft.core.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * by introducing a custom gravity system, allowing for more flexible control
  * of how entities behave in different gravity environments.
  */
-@Mixin(EntityLiving.class)
-public class MixinLivingEntity implements ILivingEntity {
+@Mixin(Mob.class)
+public class MobMixin implements IGravityMob {
 
 	/**
 	 * Unique field to store the vertical gravity scale.
@@ -87,8 +86,8 @@ public class MixinLivingEntity implements ILivingEntity {
 	 * @param instance The living entity instance.
 	 * @param yd The original vertical movement value (delta Y).
 	 */
-	@Redirect(method = "moveEntityWithHeading(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/EntityLiving;yd:D", opcode = Opcodes.PUTFIELD), remap = false)
-	public void afterMoveEntityWithHeading(EntityLiving instance, double yd) {
+	@Redirect(method = "moveEntityWithHeading(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/Mob;yd:D", opcode = Opcodes.PUTFIELD), remap = false)
+	public void afterMoveEntityWithHeading(Mob instance, double yd) {
 		double offset = -(yd - instance.yd);
 		if ((0.021 > offset && offset > 0.019) || (0.081 > offset && offset > 0.079)) {  // If falling in water or in air
 			instance.yd -= offset * y_gravity_scale;
@@ -119,8 +118,8 @@ public class MixinLivingEntity implements ILivingEntity {
 	 * @param instance The living entity instance.
 	 * @param value The original vertical movement value (delta Y).
 	 */
-	@Redirect(method = "jump()V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/EntityLiving;yd:D", opcode = Opcodes.PUTFIELD), remap = false)
-	public void atJump(EntityLiving instance, double value) {
+	@Redirect(method = "jump()V", at = @At(value = "FIELD", target = "Lnet/minecraft/core/entity/Mob;yd:D", opcode = Opcodes.PUTFIELD), remap = false)
+	public void atJump(Mob instance, double value) {
 		instance.yd = jump_force;
 	}
 

@@ -8,7 +8,7 @@ import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 
-public class main implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
+public class GravityLib implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
     public static final String MOD_ID = "gravitylib";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final ModConfig MOD_CONFIG = new ModConfig();
@@ -18,7 +18,7 @@ public class main implements ModInitializer, GameStartEntrypoint, RecipeEntrypoi
 
 	@Override
     public void onInitialize() {
-        LOGGER.info("ExampleMod initialized.");
+        LOGGER.info("[GravityLib] **initialized**");
     }
 
 	@Override
